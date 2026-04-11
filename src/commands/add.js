@@ -1,33 +1,50 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
-import { POPULAR_LIBS, getInstallCmd } from '../templates/registry.js';
+import fs from 'fs';
+import { POPULAR_LIBS, getInstallCmd, getDevInstallCmd } from '../templates/registry.js';
 import { FRAMEWORKS } from '../templates/registry.js';
 
 // bhil add axios zustand tailwind
 export async function addPackage(packages, options) {
   const pm = options.pm || 'npm';
+  const forceDev = options.dev || false;
 
-  // Résoudre les alias (ex: "tailwind" → vrai package npm)
+  // Vérifier qu'on est dans un projet Node.js
+  if (!fs.existsSync('package.json')) {
+    console.error(chalk.red('\n  Erreur : Aucun package.json trouvé dans le dossier courant.'));
+    console.error(chalk.gray('  Lance cette commande depuis la racine de ton projet.\n'));
+    return;
+  }
+
+  // Résoudre les alias (ex: "tailwind" → vrais packages npm)
   const resolved = packages.map(p => {
     const alias = POPULAR_LIBS[p];
-    return alias ? alias.pkg : p;
+    return { pkgs: (alias ? alias.pkg : p).split(' ').filter(Boolean), isDev: alias?.dev || false };
   });
 
-  const flat = resolved.join(' ').split(' ').filter(Boolean);
-  const cmd = getInstallCmd(pm, flat);
+  // Séparer les packages prod et dev
+  const devPkgs  = resolved.filter(r => forceDev || r.isDev).flatMap(r => r.pkgs);
+  const prodPkgs = resolved.filter(r => !forceDev && !r.isDev).flatMap(r => r.pkgs);
 
   console.log('');
   console.log(`  ${chalk.gray('Installation de')} ${chalk.cyan(packages.join(', '))}...`);
-  console.log(`  ${chalk.gray('$')} ${cmd}`);
   console.log('');
 
   const spinner = ora('Installation...').start();
   try {
-    await execa(cmd, { shell: true, stdio: 'pipe' });
-    if (packages.includes('tailwind')) {
-      await execa('npx tailwindcss init -p', { shell: true, stdio: 'ignore' });
+    if (prodPkgs.length > 0) {
+      await execa(getInstallCmd(pm, prodPkgs), { shell: true, stdio: 'pipe' });
     }
+    if (devPkgs.length > 0) {
+      await execa(getDevInstallCmd(pm, devPkgs), { shell: true, stdio: 'pipe' });
+    }
+
+    // Configuration spéciale Tailwind
+    if (packages.includes('tailwind')) {
+      await execa('npx tailwindcss@3 init -p', { shell: true, stdio: 'ignore' });
+    }
+
     spinner.succeed(`${chalk.cyan(packages.join(', '))} installé${packages.length > 1 ? 's' : ''} !`);
   } catch (e) {
     spinner.fail('Erreur lors de l\'installation');
@@ -51,7 +68,8 @@ export function listTemplates() {
   console.log(chalk.bold('  Librairies rapides (bhil add <alias>) :\n'));
 
   Object.entries(POPULAR_LIBS).forEach(([alias, val]) => {
-    console.log(`  ${chalk.cyan(alias.padEnd(12))} ${chalk.gray('→')} ${val.label}`);
+    const devTag = val.dev ? chalk.yellow(' [dev]') : '';
+    console.log(`  ${chalk.cyan(alias.padEnd(12))} ${chalk.gray('→')} ${val.label}${devTag}`);
   });
 
   console.log('');
@@ -60,5 +78,6 @@ export function listTemplates() {
   console.log(`  ${chalk.gray('$')} bhil create mon-app --framework next --ts --tailwind`);
   console.log(`  ${chalk.gray('$')} bhil new dashboard --framework react --pm pnpm`);
   console.log(`  ${chalk.gray('$')} bhil add axios zustand icons`);
+  console.log(`  ${chalk.gray('$')} bhil add tailwind --dev`);
   console.log('');
 }

@@ -161,7 +161,7 @@ export async function createProject(name, options) {
     try {
       const pkg = POPULAR_LIBS['tailwind'].pkg.split(' ');
       await execa(getInstallCmd(pm, pkg), { shell: true, cwd: projectName, stdio: 'pipe' });
-      await execa('npx tailwindcss init -p', { shell: true, cwd: projectName, stdio: 'ignore' });
+      await execa('npx tailwindcss@3 init -p', { shell: true, cwd: projectName, stdio: 'ignore' });
       spinnerTw.succeed('Tailwind CSS configuré !');
     } catch(e) {
       spinnerTw.fail('Erreur lors de la configuration de Tailwind');

@@ -1,22 +1,17 @@
 # bhil — ton gestionnaire de projets
 
-Crée n'importe quel projet en quelques secondes, sans te souvenir des commandes.
+Crée et configure n'importe quel projet en quelques secondes, sans te souvenir des commandes.
 
 ## Installation
 
 ```bash
-# Clone le projet
-git clone https://github.com/bhilal/bhil.git
-cd bhil
-
-# Installe les dépendances
+git clone https://github.com/7Bhil/bhil-cli.git
+cd bhil-cli
 npm install
-
-# Installe bhil globalement sur ta machine
 npm install -g .
 ```
 
-Maintenant tu peux taper `bhil` depuis n'importe où dans ton terminal !
+Maintenant tape `bhil` depuis n'importe où dans ton terminal !
 
 ---
 
@@ -26,21 +21,24 @@ Maintenant tu peux taper `bhil` depuis n'importe où dans ton terminal !
 ```bash
 bhil create mon-app
 ```
-bhil te pose des questions et configure tout.
+bhil te pose des questions et configure tout automatiquement.
 
 ### Mode rapide (une seule commande)
 ```bash
 # React + Vite
 bhil create mon-app --framework react
 
-# Next.js + TypeScript + Tailwind
-bhil create mon-app --framework next --ts --tailwind
+# Next.js + TypeScript
+bhil create mon-app --framework next --ts
 
 # Vue 3 avec pnpm
-bhil new mon-app --framework vue --pm pnpm
+bhil create mon-app --framework vue --pm pnpm
 
-# Svelte
-bhil create mon-app --framework svelte --ts
+# Svelte + TypeScript + Tailwind
+bhil create mon-app --framework svelte --ts --tailwind
+
+# Node.js + Express
+bhil create mon-app --framework node
 ```
 
 ### Ajouter des librairies
@@ -49,9 +47,14 @@ bhil create mon-app --framework svelte --ts
 bhil add axios
 bhil add zustand icons router
 
+# Forcer l'installation en devDependencies
+bhil add tailwind --dev
+
 # Ou le vrai nom npm
 bhil add framer-motion @stripe/stripe-js
 ```
+
+> Les librairies marquées `[dev]` (Tailwind, Prisma) sont automatiquement installées en `devDependencies`.
 
 ### Voir tous les templates
 ```bash
@@ -60,42 +63,52 @@ bhil list
 
 ---
 
+## Comportement automatique
+
+Après chaque `bhil create` :
+- ✅ Les dépendances sont installées automatiquement (`npm install`)
+- ✅ Un repo git est initialisé avec un premier commit (`git init`)
+- ✅ Si Tailwind est sélectionné, `tailwind.config.js` et `postcss.config.js` sont générés
+
+---
+
 ## Frameworks supportés
 
-| Alias       | Description              |
-|-------------|--------------------------|
-| `react`     | React + Vite             |
-| `next`      | Next.js (App Router)     |
-| `vue`       | Vue 3 + Vite             |
-| `svelte`    | Svelte + Vite            |
-| `sveltekit` | SvelteKit                |
-| `nuxt`      | Nuxt 3                   |
-| `remix`     | Remix                    |
-| `astro`     | Astro                    |
-| `node`      | Node.js (API)            |
-| `electron`  | App bureau Electron      |
+| Alias       | Description              | Port dev |
+|-------------|--------------------------|----------|
+| `react`     | React + Vite             | 5173     |
+| `next`      | Next.js (App Router)     | 3000     |
+| `vue`       | Vue 3 + Vite             | 5173     |
+| `svelte`    | Svelte + Vite            | 5173     |
+| `sveltekit` | SvelteKit                | 5173     |
+| `nuxt`      | Nuxt 3                   | 3000     |
+| `remix`     | Remix                    | 3000     |
+| `astro`     | Astro                    | 4321     |
+| `node`      | Node.js + Express        | 3000     |
+| `electron`  | App bureau Electron      | —        |
 
 ## Librairies rapides
 
-| Alias      | Librairie             |
-|------------|-----------------------|
-| `tailwind` | Tailwind CSS          |
-| `router`   | React Router          |
-| `axios`    | Axios                 |
-| `query`    | TanStack Query        |
-| `zustand`  | Zustand               |
-| `mui`      | Material UI           |
-| `shadcn`   | shadcn/ui             |
-| `framer`   | Framer Motion         |
-| `zod`      | Zod                   |
-| `rhf`      | React Hook Form       |
-| `icons`    | Lucide React          |
-| `recharts` | Recharts              |
-| `prisma`   | Prisma ORM            |
-| `supabase` | Supabase              |
-| `firebase` | Firebase              |
-| `stripe`   | Stripe                |
-| `auth`     | NextAuth.js           |
+| Alias      | Librairie             | Type  |
+|------------|-----------------------|-------|
+| `tailwind` | Tailwind CSS v3       | dev   |
+| `router`   | React Router          | prod  |
+| `axios`    | Axios                 | prod  |
+| `query`    | TanStack Query        | prod  |
+| `zustand`  | Zustand               | prod  |
+| `mui`      | Material UI           | prod  |
+| `framer`   | Framer Motion         | prod  |
+| `zod`      | Zod                   | prod  |
+| `rhf`      | React Hook Form       | prod  |
+| `icons`    | Lucide React          | prod  |
+| `recharts` | Recharts              | prod  |
+| `prisma`   | Prisma ORM            | dev   |
+| `supabase` | Supabase              | prod  |
+| `firebase` | Firebase              | prod  |
+| `stripe`   | Stripe                | prod  |
+| `auth`     | NextAuth.js           | prod  |
+
+> **shadcn/ui** : nécessite une initialisation spéciale, utilise `npx shadcn@latest init` directement.
 
 ---
 
@@ -107,11 +120,9 @@ Ouvre `src/templates/registry.js` et ajoute ton framework dans `FRAMEWORKS` :
 monoutil: {
   label: 'Mon outil custom',
   color: 'yellow',
+  port: 8080,
   variants: {
     default: { cmd: (pm, name) => `ma-commande ${name}` },
   },
 },
 ```
-
-C'est tout !
-# bhil-cli

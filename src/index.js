@@ -31,6 +31,7 @@ program
   .command('add <packages...>')
   .description('Ajouter des librairies à ton projet')
   .option('-p, --pm <pm>', 'Gestionnaire de paquets', 'npm')
+  .option('-D, --dev', 'Installer en devDependencies')
   .action(addPackage);
 
 // bhil list — voir les templates disponibles

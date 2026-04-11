@@ -109,7 +109,7 @@ export const FRAMEWORKS = {
 
 // Librairies populaires installables avec `bhil add`
 export const POPULAR_LIBS = {
-  'tailwind':      { pkg: 'tailwindcss postcss autoprefixer',    label: 'Tailwind CSS v3' },
+  'tailwind':      { pkg: 'tailwindcss postcss autoprefixer',    label: 'Tailwind CSS v3', dev: true },
   'router':        { pkg: 'react-router-dom',                    label: 'React Router' },
   'axios':         { pkg: 'axios',                               label: 'Axios' },
   'query':         { pkg: '@tanstack/react-query',               label: 'TanStack Query' },
@@ -122,7 +122,7 @@ export const POPULAR_LIBS = {
   'rhf':           { pkg: 'react-hook-form',                     label: 'React Hook Form' },
   'icons':         { pkg: 'lucide-react',                        label: 'Lucide Icons' },
   'recharts':      { pkg: 'recharts',                            label: 'Recharts' },
-  'prisma':        { pkg: 'prisma @prisma/client',               label: 'Prisma ORM' },
+  'prisma':        { pkg: 'prisma @prisma/client',               label: 'Prisma ORM', dev: true },
   'supabase':      { pkg: '@supabase/supabase-js',               label: 'Supabase' },
   'firebase':      { pkg: 'firebase',                            label: 'Firebase' },
   'stripe':        { pkg: '@stripe/stripe-js stripe',            label: 'Stripe' },
@@ -143,6 +143,12 @@ function pmExec(pm, rest) {
 export function getInstallCmd(pm, pkgs) {
   const str = pkgs.join(' ');
   const map = { npm: `npm install ${str}`, yarn: `yarn add ${str}`, pnpm: `pnpm add ${str}`, bun: `bun add ${str}` };
+  return map[pm] || map.npm;
+}
+
+export function getDevInstallCmd(pm, pkgs) {
+  const str = pkgs.join(' ');
+  const map = { npm: `npm install -D ${str}`, yarn: `yarn add -D ${str}`, pnpm: `pnpm add -D ${str}`, bun: `bun add -D ${str}` };
   return map[pm] || map.npm;
 }
 
