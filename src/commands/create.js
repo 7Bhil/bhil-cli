@@ -130,7 +130,7 @@ export async function createProject(name, options) {
   }
 
   // ── Installation globale des dépendances ────────────────
-  if (!options.noInstall) {
+  if (options.install !== false) {
     const spinnerInst = ora('Installation des dépendances du projet...').start();
     try {
       await execa(getBaseInstallCmd(pm), { shell: true, cwd: projectName, stdio: 'pipe' });
@@ -178,17 +178,20 @@ export async function createProject(name, options) {
   }
 
   // ── Instructions finales ──────────────────────────────
+  const devPort = FRAMEWORKS[framework]?.port || null;
   console.log('');
   console.log(chalk.bold.green('  Tout est prêt ! Maintenant :'));
   console.log('');
   console.log(`  ${chalk.gray('$')} ${chalk.white(`cd ${projectName}`)}`);
   console.log(`  ${chalk.gray('$')} ${chalk.white(getDevCmd(pm))}`);
   console.log('');
-  console.log(`  ${chalk.gray('Ouvre')} ${chalk.cyan('http://localhost:5173')} ${chalk.gray('dans ton navigateur')}`);
-  console.log('');
+  if (devPort) {
+    console.log(`  ${chalk.gray('Ouvre')} ${chalk.cyan(`http://localhost:${devPort}`)} ${chalk.gray('dans ton navigateur')}`);
+    console.log('');
+  }
 }
 
-// Projet Node.js custom (sans template)
+// Projet Node.js custom (avec Express)
 async function createCustomProject(name, framework, pm) {
   const spinner = ora(`Création du projet ${chalk.cyan(name)}...`).start();
   try {
@@ -198,10 +201,14 @@ async function createCustomProject(name, framework, pm) {
       version: '1.0.0',
       type: 'module',
       scripts: { dev: 'node src/index.js', start: 'node src/index.js' },
+      dependencies: { express: '^4.19.2' },
     };
     fs.writeFileSync(path.join(name, 'package.json'), JSON.stringify(pkg, null, 2));
     fs.mkdirSync(path.join(name, 'src'), { recursive: true });
-    fs.writeFileSync(path.join(name, 'src', 'index.js'), `// Bienvenue dans ${name} !\nconsole.log('bhil ❤');\n`);
+    fs.writeFileSync(
+      path.join(name, 'src', 'index.js'),
+      `import express from 'express';\n\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\napp.get('/', (req, res) => res.json({ message: 'Bienvenue sur ${name} !' }));\n\napp.listen(PORT, () => console.log(\`Serveur démarré sur http://localhost:\${PORT}\`));\n`
+    );
     spinner.succeed(`Projet ${chalk.cyan(name)} créé !`);
   } catch (e) {
     spinner.fail('Erreur');

@@ -6,6 +6,7 @@ export const FRAMEWORKS = {
   react: {
     label: 'React (Vite)',
     color: 'cyan',
+    port: 5173,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template react`) },
       ts:      { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template react-ts`) },
@@ -16,6 +17,7 @@ export const FRAMEWORKS = {
   next: {
     label: 'Next.js',
     color: 'white',
+    port: 3000,
     variants: {
       default: { cmd: (pm, name) => pmExec(pm, `create-next-app@latest ${name} --no-typescript --tailwind=false --eslint --app`) },
       ts:      { cmd: (pm, name) => pmExec(pm, `create-next-app@latest ${name} --typescript --tailwind=false --eslint --app`) },
@@ -26,6 +28,7 @@ export const FRAMEWORKS = {
   vue: {
     label: 'Vue 3 (Vite)',
     color: 'green',
+    port: 5173,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template vue`) },
       ts:      { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template vue-ts`) },
@@ -36,6 +39,7 @@ export const FRAMEWORKS = {
   svelte: {
     label: 'Svelte (Vite)',
     color: 'red',
+    port: 5173,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template svelte`) },
       ts:      { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template svelte-ts`) },
@@ -46,6 +50,7 @@ export const FRAMEWORKS = {
   sveltekit: {
     label: 'SvelteKit',
     color: 'red',
+    port: 5173,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `svelte@latest ${name}`) },
     },
@@ -55,6 +60,7 @@ export const FRAMEWORKS = {
   nuxt: {
     label: 'Nuxt 3',
     color: 'green',
+    port: 3000,
     variants: {
       default: { cmd: (pm, name) => pmExec(pm, `nuxi@latest init ${name}`) },
     },
@@ -64,6 +70,7 @@ export const FRAMEWORKS = {
   remix: {
     label: 'Remix',
     color: 'blue',
+    port: 3000,
     variants: {
       default: { cmd: (pm, name) => pmExec(pm, `create-remix@latest ${name}`) },
     },
@@ -73,6 +80,7 @@ export const FRAMEWORKS = {
   astro: {
     label: 'Astro',
     color: 'magenta',
+    port: 4321,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `astro@latest ${name}`) },
     },
@@ -80,8 +88,9 @@ export const FRAMEWORKS = {
 
   // ── Node.js API ───────────────────────────────────────
   node: {
-    label: 'Node.js (API Express)',
+    label: 'Node.js + Express',
     color: 'yellow',
+    port: 3000,
     variants: {
       default: { cmd: (pm, name) => null, custom: true },
     },
@@ -91,6 +100,7 @@ export const FRAMEWORKS = {
   electron: {
     label: 'Electron (App bureau)',
     color: 'blue',
+    port: null,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `electron-vite@latest ${name}`) },
     },
@@ -105,7 +115,8 @@ export const POPULAR_LIBS = {
   'query':         { pkg: '@tanstack/react-query',               label: 'TanStack Query' },
   'zustand':       { pkg: 'zustand',                             label: 'Zustand' },
   'mui':           { pkg: '@mui/material @emotion/react @emotion/styled', label: 'Material UI' },
-  'shadcn':        { pkg: 'shadcn',                              label: 'shadcn/ui' },
+  // shadcn/ui nécessite une initialisation via CLI: npx shadcn@latest init
+  // 'shadcn': non supporté via bhil add (utilise: npx shadcn@latest init)
   'framer':        { pkg: 'framer-motion',                       label: 'Framer Motion' },
   'zod':           { pkg: 'zod',                                 label: 'Zod' },
   'rhf':           { pkg: 'react-hook-form',                     label: 'React Hook Form' },
