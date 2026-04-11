@@ -99,7 +99,7 @@ export const FRAMEWORKS = {
 
 // Librairies populaires installables avec `bhil add`
 export const POPULAR_LIBS = {
-  'tailwind':      { pkg: 'tailwindcss @tailwindcss/vite',      label: 'Tailwind CSS' },
+  'tailwind':      { pkg: 'tailwindcss postcss autoprefixer',    label: 'Tailwind CSS v3' },
   'router':        { pkg: 'react-router-dom',                    label: 'React Router' },
   'axios':         { pkg: 'axios',                               label: 'Axios' },
   'query':         { pkg: '@tanstack/react-query',               label: 'TanStack Query' },
