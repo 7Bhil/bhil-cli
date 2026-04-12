@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
 import { FRAMEWORKS, POPULAR_LIBS, getInstallCmd, getDevInstallCmd, getDevCmd, getBaseInstallCmd, detectPM } from '../templates/registry.js';
+import { REACT_PREMIUM_APP, REACT_PREMIUM_CSS } from '../templates/boilerplate.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -177,6 +178,20 @@ export async function createProject(name, options) {
     await execa('git commit -m "Init par bhil"', { shell: true, cwd: projectName, stdio: 'ignore' });
   } catch (e) {
     console.log(chalk.yellow(`\n  ⚠️  Git : commit initial ignoré (configure user.name/user.email dans git si besoin).`));
+  }
+
+  // ── Injection du Thème Premium (React) ────────────────
+  if (framework === 'react') {
+    const isTs = useTs || options.ts;
+    const appPath = path.join(projectName, 'src', isTs ? 'App.tsx' : 'App.jsx');
+    const cssPath = path.join(projectName, 'src', 'App.css');
+    
+    try {
+      fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
+      fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
+    } catch (e) {
+      // silencieux si échec
+    }
   }
 
   // ── Instructions finales ──────────────────────────────
