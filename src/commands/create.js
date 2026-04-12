@@ -227,6 +227,22 @@ export async function createProject(name, options) {
       if (fs.existsSync(path.dirname(faviconPath))) {
         fs.writeFileSync(faviconPath, faviconSvg);
       }
+
+      // 6. Fail-safe : S'assurer que react et react-dom sont dans le package.json
+      const pkgPath = path.join(projectName, 'package.json');
+      if (fs.existsSync(pkgPath)) {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        if (!pkg.dependencies?.react) {
+          pkg.dependencies = pkg.dependencies || {};
+          pkg.dependencies.react = "^18.3.1";
+          pkg.dependencies["react-dom"] = "^18.3.1";
+          // Supprimer les reliquats TS si on est en JS
+          if (!isTs && pkg.devDependencies?.typescript) {
+             delete pkg.devDependencies.typescript;
+          }
+          fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+        }
+      }
     } catch (e) {
       // silencieux si échec
     }
