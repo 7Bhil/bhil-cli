@@ -242,9 +242,6 @@ export async function createProject(name, options) {
       }
     } catch (e) {}
   }
-      // silencieux si échec
-    }
-  }
 
   // ── Instructions finales ──────────────────────────────
   const devPort = FRAMEWORKS[framework]?.port || null;
