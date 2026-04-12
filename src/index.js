@@ -1,12 +1,48 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
+import inquirer from 'inquirer';
 import { createProject } from './commands/create.js';
 import { addPackage } from './commands/add.js';
 import { listTemplates } from './commands/list.js';
 import chalk from 'chalk';
 
 console.log(chalk.bold.blue('\n  bhil') + chalk.gray(' — ton gestionnaire de projets\n'));
+
+async function showDashboard() {
+  const { action } = await inquirer.prompt([{
+    type: 'list',
+    name: 'action',
+    message: 'Que veux-tu faire ?',
+    choices: [
+      { name: '🚀 Créer un nouveau projet', value: 'create' },
+      { name: '📦 Ajouter des librairies', value: 'add' },
+      { name: '📜 Voir les templates', value: 'list' },
+      { name: '❌ Quitter', value: 'exit' }
+    ]
+  }]);
+
+  switch (action) {
+    case 'create':
+      await createProject(undefined, {});
+      break;
+    case 'add':
+      const { pkgs } = await inquirer.prompt([{
+        type: 'input',
+        name: 'pkgs',
+        message: 'Librairies à ajouter (alias ou noms npm séparés par des espaces) :'
+      }]);
+      if (pkgs.trim()) {
+        await addPackage(pkgs.split(' ').filter(Boolean), {});
+      }
+      break;
+    case 'list':
+      listTemplates();
+      break;
+    default:
+      process.exit(0);
+  }
+}
 
 program
   .name('bhil')
@@ -41,4 +77,8 @@ program
   .description('Lister tous les templates disponibles')
   .action(listTemplates);
 
-program.parse();
+if (!process.argv.slice(2).length) {
+  showDashboard();
+} else {
+  program.parse();
+}
