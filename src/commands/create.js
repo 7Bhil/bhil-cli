@@ -2,14 +2,14 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
-import { FRAMEWORKS, POPULAR_LIBS, getInstallCmd, getDevInstallCmd, getDevCmd, getBaseInstallCmd } from '../templates/registry.js';
+import { FRAMEWORKS, POPULAR_LIBS, getInstallCmd, getDevInstallCmd, getDevCmd, getBaseInstallCmd, detectPM } from '../templates/registry.js';
 import fs from 'fs';
 import path from 'path';
 
 export async function createProject(name, options) {
   let projectName = name;
   let framework = options.framework;
-  let pm = options.pm;
+  let pm = options.pm || detectPM();
   let useTs = options.ts;
   let addTailwind = options.tailwind;
   let extraLibs = [];
@@ -44,8 +44,8 @@ export async function createProject(name, options) {
     name: 'pm',
     message: 'Gestionnaire de paquets :',
     choices: ['npm', 'yarn', 'pnpm', 'bun'],
-    default: pm || 'npm',
-    when: !options.pm || options.pm === 'npm',
+    default: pm,
+    when: !options.pm,
   });
 
   questions.push({

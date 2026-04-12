@@ -2,11 +2,11 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
 import fs from 'fs';
-import { POPULAR_LIBS, FRAMEWORKS, getInstallCmd, getDevInstallCmd } from '../templates/registry.js';
+import { POPULAR_LIBS, FRAMEWORKS, getInstallCmd, getDevInstallCmd, detectPM } from '../templates/registry.js';
 
 // bhil add axios zustand tailwind
 export async function addPackage(packages, options) {
-  const pm = options.pm || 'npm';
+  const pm = options.pm || detectPM();
   const forceDev = options.dev || false;
 
   // Vérifier qu'on est dans un projet Node.js

@@ -1,5 +1,5 @@
-// Registre de tous les templates supportés par bhil
 // Tu peux en ajouter facilement ici !
+import fs from 'fs';
 
 export const FRAMEWORKS = {
   // ── React ──────────────────────────────────────────────
@@ -138,6 +138,13 @@ function pmCreate(pm, rest) {
 function pmExec(pm, rest) {
   const map = { npm: `npx ${rest}`, yarn: `yarn dlx ${rest}`, pnpm: `pnpm dlx ${rest}`, bun: `bunx ${rest}` };
   return map[pm] || map.npm;
+}
+
+export function detectPM() {
+  if (fs.existsSync('pnpm-lock.yaml')) return 'pnpm';
+  if (fs.existsSync('yarn.lock')) return 'yarn';
+  if (fs.existsSync('bun.lockb')) return 'bun';
+  return 'npm';
 }
 
 export function getInstallCmd(pm, pkgs) {
