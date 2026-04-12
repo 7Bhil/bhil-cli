@@ -22,11 +22,12 @@ Maintenant tape `bhil` depuis n'importe où dans ton terminal !
 
 ## Utilisation
 
-### Mode interactif (recommandé)
+### Mode Tableau de bord (Interactif complet)
+Tape simplement `bhil` pour accéder au menu gui :
 ```bash
-bhil create mon-app
+bhil
 ```
-bhil te pose des questions et configure tout automatiquement.
+Laisse-toi guider pour créer un projet ou ajouter des librairies.
 
 ### Mode rapide (une seule commande)
 ```bash
