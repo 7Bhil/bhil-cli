@@ -1,3 +1,4 @@
+import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
@@ -6,7 +7,19 @@ import { POPULAR_LIBS, FRAMEWORKS, getInstallCmd, getDevInstallCmd, detectPM } f
 
 // bhil add axios zustand tailwind
 export async function addPackage(packages, options) {
-  const pm = options.pm || detectPM();
+  let pm = options.pm || detectPM();
+
+  if (!pm) {
+    const { pm: chosenPm } = await inquirer.prompt([{
+      type: 'list',
+      name: 'pm',
+      message: 'Gestionnaire de paquets non détecté. Lequel utiliser ?',
+      choices: ['npm', 'yarn', 'pnpm', 'bun'],
+      default: 'npm',
+    }]);
+    pm = chosenPm;
+  }
+
   const forceDev = options.dev || false;
 
   // Vérifier qu'on est dans un projet Node.js

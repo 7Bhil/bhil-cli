@@ -9,7 +9,7 @@ import path from 'path';
 export async function createProject(name, options) {
   let projectName = name;
   let framework = options.framework;
-  let pm = options.pm || detectPM();
+  let pm = options.pm || detectPM() || 'npm';
   let useTs = options.ts;
   let addTailwind = options.tailwind;
   let extraLibs = [];

@@ -170,7 +170,7 @@ export function detectPM() {
   if (fs.existsSync('yarn.lock')) return 'yarn';
   if (fs.existsSync('bun.lockb')) return 'bun';
   
-  return 'npm';
+  return null;
 }
 
 export function getInstallCmd(pm, pkgs) {
