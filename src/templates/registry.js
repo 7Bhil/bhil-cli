@@ -141,9 +141,35 @@ function pmExec(pm, rest) {
 }
 
 export function detectPM() {
+  // 1. Check environment variable (if run via a package manager)
+  const agent = process.env.npm_config_user_agent;
+  if (agent) {
+    if (agent.includes('pnpm')) return 'pnpm';
+    if (agent.includes('yarn')) return 'yarn';
+    if (agent.includes('bun')) return 'bun';
+    if (agent.includes('npm')) return 'npm';
+  }
+
+  // 2. Check package.json "packageManager" field
+  try {
+    if (fs.existsSync('package.json')) {
+      const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+      if (pkg.packageManager) {
+        if (pkg.packageManager.startsWith('pnpm')) return 'pnpm';
+        if (pkg.packageManager.startsWith('yarn')) return 'yarn';
+        if (pkg.packageManager.startsWith('bun')) return 'bun';
+        if (pkg.packageManager.startsWith('npm')) return 'npm';
+      }
+    }
+  } catch (e) {
+    // ignore error reading/parsing pkg
+  }
+
+  // 3. Check lockfiles
   if (fs.existsSync('pnpm-lock.yaml')) return 'pnpm';
   if (fs.existsSync('yarn.lock')) return 'yarn';
   if (fs.existsSync('bun.lockb')) return 'bun';
+  
   return 'npm';
 }
 
