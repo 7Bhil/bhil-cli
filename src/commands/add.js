@@ -2,8 +2,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
 import fs from 'fs';
-import { POPULAR_LIBS, getInstallCmd, getDevInstallCmd } from '../templates/registry.js';
-import { FRAMEWORKS } from '../templates/registry.js';
+import { POPULAR_LIBS, FRAMEWORKS, getInstallCmd, getDevInstallCmd } from '../templates/registry.js';
 
 // bhil add axios zustand tailwind
 export async function addPackage(packages, options) {
@@ -33,12 +32,8 @@ export async function addPackage(packages, options) {
 
   const spinner = ora('Installation...').start();
   try {
-    if (prodPkgs.length > 0) {
-      await execa(getInstallCmd(pm, prodPkgs), { shell: true, stdio: 'pipe' });
-    }
-    if (devPkgs.length > 0) {
-      await execa(getDevInstallCmd(pm, devPkgs), { shell: true, stdio: 'pipe' });
-    }
+    if (prodPkgs.length > 0) await execa(getInstallCmd(pm, prodPkgs),   { shell: true, stdio: 'pipe' });
+    if (devPkgs.length  > 0) await execa(getDevInstallCmd(pm, devPkgs), { shell: true, stdio: 'pipe' });
 
     // Configuration spéciale Tailwind
     if (packages.includes('tailwind')) {

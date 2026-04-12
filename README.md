@@ -108,7 +108,7 @@ Après chaque `bhil create` :
 | `stripe`   | Stripe                | prod  |
 | `auth`     | NextAuth.js           | prod  |
 
-> **shadcn/ui** : nécessite une initialisation spéciale, utilise `npx shadcn@latest init` directement.
+> **shadcn/ui** : non supporté, utilise `npx shadcn@latest init` directement dans ton projet.
 
 ---
 

@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
 import { execa } from 'execa';
-import { FRAMEWORKS, POPULAR_LIBS, getInstallCmd, getDevCmd, getBaseInstallCmd } from '../templates/registry.js';
+import { FRAMEWORKS, POPULAR_LIBS, getInstallCmd, getDevInstallCmd, getDevCmd, getBaseInstallCmd } from '../templates/registry.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -141,13 +141,15 @@ export async function createProject(name, options) {
   }
 
   // ── Librairies supplémentaires ────────────────────────
-  const libsToInstall = extraLibs.filter(l => l !== 'tailwind').map(k => POPULAR_LIBS[k]?.pkg).filter(Boolean);
+  const extraKeys = extraLibs.filter(l => l !== 'tailwind');
+  const prodLibs  = extraKeys.filter(k => !POPULAR_LIBS[k]?.dev).flatMap(k => POPULAR_LIBS[k]?.pkg.split(' ') || []);
+  const devLibs   = extraKeys.filter(k =>  POPULAR_LIBS[k]?.dev).flatMap(k => POPULAR_LIBS[k]?.pkg.split(' ') || []);
 
-  if (libsToInstall.length > 0) {
+  if (prodLibs.length > 0 || devLibs.length > 0) {
     const spinner = ora('Installation des librairies supplémentaires...').start();
     try {
-      const installCmd = getInstallCmd(pm, libsToInstall.join(' ').split(' '));
-      await execa(installCmd, { shell: true, cwd: projectName, stdio: 'pipe' });
+      if (prodLibs.length > 0) await execa(getInstallCmd(pm, prodLibs),    { shell: true, cwd: projectName, stdio: 'pipe' });
+      if (devLibs.length  > 0) await execa(getDevInstallCmd(pm, devLibs),  { shell: true, cwd: projectName, stdio: 'pipe' });
       spinner.succeed('Librairies supplémentaires installées !');
     } catch (e) {
       spinner.fail('Erreur installation librairies');
@@ -174,7 +176,7 @@ export async function createProject(name, options) {
     await execa('git add .', { shell: true, cwd: projectName, stdio: 'ignore' });
     await execa('git commit -m "Init par bhil"', { shell: true, cwd: projectName, stdio: 'ignore' });
   } catch (e) {
-    // on l'ignore silencieusement si git n'est pas installé ou s'il y a un conflit
+    console.log(chalk.yellow(`\n  ⚠️  Git : commit initial ignoré (configure user.name/user.email dans git si besoin).`));
   }
 
   // ── Instructions finales ──────────────────────────────
