@@ -131,11 +131,9 @@ export const POPULAR_LIBS = {
 
 // Helpers pour construire les commandes selon le gestionnaire
 function pmCreate(pm, rest) {
-  // Pour npm, pnpm et bun, on a besoin du -- pour passer les arguments au générateur (ex: vite)
-  // Pour yarn, on doit retirer le séparateur "-- " mais GARDER les tirets des arguments (ex: --template)
   const map = { 
     npm: `npm create ${rest}`, 
-    yarn: `yarn create ${rest.replace('-- ', '')}`, 
+    yarn: `yarn create ${rest.replace('-- --', '--')}`, // Simplifie le double dash pour Yarn
     pnpm: `pnpm create ${rest}`, 
     bun: `bun create ${rest}` 
   };

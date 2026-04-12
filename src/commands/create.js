@@ -195,40 +195,41 @@ export async function createProject(name, options) {
     const indexHtmlPath = path.join(projectName, 'index.html');
     
     try {
-      // 1. Nettoyage : supprimer les fichiers Vanilla qui causent des erreurs
-      ['main.ts', 'style.css', 'counter.ts', 'main.js', 'typescript.svg'].forEach(file => {
-        const p = path.join(projectName, 'src', file);
-        if (fs.existsSync(p)) fs.unlinkSync(p);
-      });
-
-      // 2. Ecriture des fichiers React Premium
+      // 1. Ecriture des fichiers React Premium (Overwrites classiques)
       fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
       fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
       fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
       
-      // 3. Mise à jour de l'index.html (Titre + Script entry point)
-      let html = fs.readFileSync(indexHtmlPath, 'utf8');
-      html = html.replace(/<title>.*<\/title>/, `<title>${projectName}</title>`);
-      // Force le script vers main.jsx ou main.tsx
-      const entryPoint = isTs ? '/src/main.tsx' : '/src/main.jsx';
-      html = html.replace(/src="\/src\/[^"]*"/, `src="${entryPoint}"`);
-      fs.writeFileSync(indexHtmlPath, html);
+      // 2. Mise à jour de l'index.html (Titre + Script entry point)
+      if (fs.existsSync(indexHtmlPath)) {
+        let html = fs.readFileSync(indexHtmlPath, 'utf8');
+        html = html.replace(/<title>.*<\/title>/, `<title>${projectName}</title>`);
+        // Force le script vers main.jsx ou main.tsx pour garantir le fonctionnement de React
+        const entryPoint = isTs ? '/src/main.tsx' : '/src/main.jsx';
+        html = html.replace(/src="\/src\/[^"]*"/, `src="${entryPoint}"`);
+        fs.writeFileSync(indexHtmlPath, html);
+      }
 
-      // 4. Création du main (entry point React)
+      // 3. Création du main.jsx (Entry point React stable)
       const mainPath = path.join(projectName, 'src', isTs ? 'main.tsx' : 'main.jsx');
       const mainContent = isTs 
         ? `import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\nimport './index.css';\n\nReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);`
         : `import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App.jsx';\nimport './index.css';\n\nReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><App /></React.StrictMode>);`;
       fs.writeFileSync(mainPath, mainContent);
 
-      // 5. Injection Favicon Custom
+      // 4. Injection Favicon Custom
       const faviconPath = path.join(projectName, 'public', 'favicon.svg');
       const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#8b5cf6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="60" fill="white" font-weight="bold">B</text></svg>`;
-      if (fs.existsSync(path.dirname(faviconPath))) {
+      const publicDir = path.dirname(faviconPath);
+      if (fs.existsSync(publicDir)) {
         fs.writeFileSync(faviconPath, faviconSvg);
       }
+    } catch (e) {
+      console.warn(chalk.yellow(`  ⚠️  Note: Échec de l'injection du thème complet, mais le projet est quand même créé.`));
+    }
 
-      // 6. Fail-safe : S'assurer que react et react-dom sont dans le package.json
+    // 5. Fail-safe : S'assurer que react et react-dom sont bien là (crucial pour Yarn)
+    try {
       const pkgPath = path.join(projectName, 'package.json');
       if (fs.existsSync(pkgPath)) {
         const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -236,14 +237,11 @@ export async function createProject(name, options) {
           pkg.dependencies = pkg.dependencies || {};
           pkg.dependencies.react = "^18.3.1";
           pkg.dependencies["react-dom"] = "^18.3.1";
-          // Supprimer les reliquats TS si on est en JS
-          if (!isTs && pkg.devDependencies?.typescript) {
-             delete pkg.devDependencies.typescript;
-          }
           fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
         }
       }
-    } catch (e) {
+    } catch (e) {}
+  }
       // silencieux si échec
     }
   }
