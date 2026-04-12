@@ -194,7 +194,7 @@ export async function createProject(name, options) {
       fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
       
       let html = fs.readFileSync(indexHtmlPath, 'utf8');
-      html = html.replace(/<title>.*<\/title>/, `<title>${projectName} — par Bhilal CHITOU</title>`);
+      html = html.replace(/<title>.*<\/title>/, `<title>${projectName}</title>`);
       fs.writeFileSync(indexHtmlPath, html);
 
       // ── Injection Favicon Custom ──────────────────────
