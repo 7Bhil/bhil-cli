@@ -5,10 +5,15 @@ Crée et configure n'importe quel projet en quelques secondes, sans te souvenir 
 ## Installation
 
 ```bash
+# 1. Clone le projet
 git clone https://github.com/7Bhil/bhil-cli.git
 cd bhil-cli
-npm install
-npm install -g .
+
+# 2. Installe les dépendances (au choix)
+npm install   # ou pnpm install, yarn install, bun install
+
+# 3. Installe bhil globalement sur ta machine
+npm install -g . # ou pnpm add -g ., yarn link
 ```
 
 Maintenant tape `bhil` depuis n'importe où dans ton terminal !
