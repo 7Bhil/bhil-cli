@@ -185,10 +185,12 @@ export async function createProject(name, options) {
     const isTs = useTs || options.ts;
     const appPath = path.join(projectName, 'src', isTs ? 'App.tsx' : 'App.jsx');
     const cssPath = path.join(projectName, 'src', 'App.css');
+    const indexCssPath = path.join(projectName, 'src', 'index.css');
     
     try {
       fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
       fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
+      fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
     } catch (e) {
       // silencieux si échec
     }
