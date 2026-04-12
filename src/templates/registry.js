@@ -6,7 +6,7 @@ export const FRAMEWORKS = {
   react: {
     label: 'React (Vite)',
     color: 'cyan',
-    port: 5173,
+    port: 5180, // Changé de 5173 pour éviter le cache Service Worker conflictuel
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template react`) },
       ts:      { cmd: (pm, name) => pmCreate(pm, `vite@latest ${name} -- --template react-ts`) },
