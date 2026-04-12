@@ -186,11 +186,16 @@ export async function createProject(name, options) {
     const appPath = path.join(projectName, 'src', isTs ? 'App.tsx' : 'App.jsx');
     const cssPath = path.join(projectName, 'src', 'App.css');
     const indexCssPath = path.join(projectName, 'src', 'index.css');
+    const indexHtmlPath = path.join(projectName, 'index.html');
     
     try {
       fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
       fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
       fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
+      
+      let html = fs.readFileSync(indexHtmlPath, 'utf8');
+      html = html.replace(/<title>.*<\/title>/, `<title>${projectName} — Built by Bhil</title>`);
+      fs.writeFileSync(indexHtmlPath, html);
     } catch (e) {
       // silencieux si échec
     }
