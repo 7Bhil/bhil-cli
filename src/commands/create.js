@@ -194,8 +194,15 @@ export async function createProject(name, options) {
       fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
       
       let html = fs.readFileSync(indexHtmlPath, 'utf8');
-      html = html.replace(/<title>.*<\/title>/, `<title>${projectName} — Built by Bhil</title>`);
+      html = html.replace(/<title>.*<\/title>/, `<title>${projectName} — par Bhilal CHITOU</title>`);
       fs.writeFileSync(indexHtmlPath, html);
+
+      // ── Injection Favicon Custom ──────────────────────
+      const faviconPath = path.join(projectName, 'public', 'favicon.svg');
+      const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#8b5cf6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="60" fill="white" font-weight="bold">B</text></svg>`;
+      if (fs.existsSync(path.dirname(faviconPath))) {
+        fs.writeFileSync(faviconPath, faviconSvg);
+      }
     } catch (e) {
       // silencieux si échec
     }
