@@ -134,10 +134,16 @@ export async function createProject(name, options) {
   if (options.install !== false) {
     const spinnerInst = ora('Installation des dépendances du projet...').start();
     try {
+      // Isolation pour Yarn (évite les conflits de workspaces avec les dossiers parents)
+      if (pm === 'yarn') {
+        fs.writeFileSync(path.join(projectName, 'yarn.lock'), '');
+      }
+
       await execa(getBaseInstallCmd(pm), { shell: true, cwd: projectName, stdio: 'pipe' });
       spinnerInst.succeed('Dépendances globales installées !');
     } catch(e) {
-      spinnerInst.fail(`Erreur lors de l'installation des dépendances globales.`);
+      spinnerInst.fail(`Erreur lors de l'installation des dépendances.`);
+      console.error(chalk.gray(`  Détails : ${e.message.split('\n')[0]}`));
     }
   }
 
