@@ -131,7 +131,14 @@ export const POPULAR_LIBS = {
 
 // Helpers pour construire les commandes selon le gestionnaire
 function pmCreate(pm, rest) {
-  const map = { npm: `npm create ${rest}`, yarn: `yarn create ${rest}`, pnpm: `pnpm create ${rest}`, bun: `bun create ${rest}` };
+  // Pour npm, pnpm et bun, on a besoin du -- pour passer les arguments au générateur (ex: vite)
+  // Pour yarn, les arguments sont passés directement.
+  const map = { 
+    npm: `npm create ${rest}`, 
+    yarn: `yarn create ${rest.replace('-- --', '')}`, 
+    pnpm: `pnpm create ${rest}`, 
+    bun: `bun create ${rest}` 
+  };
   return map[pm] || map.npm;
 }
 

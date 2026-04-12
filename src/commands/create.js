@@ -195,15 +195,33 @@ export async function createProject(name, options) {
     const indexHtmlPath = path.join(projectName, 'index.html');
     
     try {
+      // 1. Nettoyage : supprimer les fichiers Vanilla qui causent des erreurs
+      ['main.ts', 'style.css', 'counter.ts', 'main.js', 'typescript.svg'].forEach(file => {
+        const p = path.join(projectName, 'src', file);
+        if (fs.existsSync(p)) fs.unlinkSync(p);
+      });
+
+      // 2. Ecriture des fichiers React Premium
       fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
       fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
       fs.writeFileSync(indexCssPath, '/* Resetted by bhil */');
       
+      // 3. Mise à jour de l'index.html (Titre + Script entry point)
       let html = fs.readFileSync(indexHtmlPath, 'utf8');
       html = html.replace(/<title>.*<\/title>/, `<title>${projectName}</title>`);
+      // Force le script vers main.jsx ou main.tsx
+      const entryPoint = isTs ? '/src/main.tsx' : '/src/main.jsx';
+      html = html.replace(/src="\/src\/[^"]*"/, `src="${entryPoint}"`);
       fs.writeFileSync(indexHtmlPath, html);
 
-      // ── Injection Favicon Custom ──────────────────────
+      // 4. Création du main (entry point React)
+      const mainPath = path.join(projectName, 'src', isTs ? 'main.tsx' : 'main.jsx');
+      const mainContent = isTs 
+        ? `import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\nimport './index.css';\n\nReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);`
+        : `import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App.jsx';\nimport './index.css';\n\nReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><App /></React.StrictMode>);`;
+      fs.writeFileSync(mainPath, mainContent);
+
+      // 5. Injection Favicon Custom
       const faviconPath = path.join(projectName, 'public', 'favicon.svg');
       const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#8b5cf6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="60" fill="white" font-weight="bold">B</text></svg>`;
       if (fs.existsSync(path.dirname(faviconPath))) {
