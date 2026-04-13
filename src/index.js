@@ -7,9 +7,48 @@ import { addPackage } from './commands/add.js';
 import { listTemplates } from './commands/list.js';
 import chalk from 'chalk';
 
-console.log(chalk.bold.blue('\n  bhil') + chalk.gray(' — ton gestionnaire de projets\n'));
+const DIAMOND = chalk.hex('#B9F2FF');
+const CYAN = chalk.hex('#00D2FF');
+const BLUE = chalk.hex('#3A7BD5');
+const PURPLE = chalk.hex('#8E2DE2');
+
+const DIAMOND_COLORS = [
+  '#00D2FF', // Cyan (Right)
+  '#B9F2FF', // Diamond
+  '#E2E8F0'  // Silver (Left)
+];
+
+function colorLine(text) {
+  const colors = DIAMOND_COLORS.map(c => chalk.hex(c));
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    const ratio = i / text.length;
+    // Inversion pour le dégradé Droite-Vers-Gauche
+    const colorIdx = Math.min(Math.floor((1 - ratio) * colors.length), colors.length - 1);
+    result += colors[colorIdx](text[i]);
+  }
+  return result;
+}
+
+function showSplash() {
+  const logo = [
+    `      :::::::::  :::    ::: ::::::::::: :::            :::     :::        `,
+    `      :+:    :+: :+:    :+:     :+:     :+:          :+: :+:   :+:        `,
+    `      +:+    +:+ +:+    +:+     +:+     +:+         +:+   +:+  +:+        `,
+    `      +#++:++#+  +#++:++#++     +#+     +#+        +#++:++#++: +#+        `,
+    `      +#+    +#+ +#+    +#+     +#+     +#+        +#+     +#+ +#+        `,
+    `      #+#    #+# #+#    #+#     #+#     #+#        #+#     +#+ #+#        `,
+    `      #########  ###    ### ########### ########## ###     ### ########## .`
+  ];
+
+  console.log('');
+  logo.forEach(line => console.log(colorLine(line)));
+  console.log(chalk.gray(`  ─────────────────────────────────── bhil-cli v1.0.0 ───────────────────────────────────`));
+  console.log('');
+}
 
 async function showDashboard() {
+  showSplash();
   const { action } = await inquirer.prompt([{
     type: 'list',
     name: 'action',
