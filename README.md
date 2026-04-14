@@ -2,18 +2,27 @@
 
 Crée et configure n'importe quel projet en quelques secondes, sans te souvenir des commandes.
 
-## Installation
+## 🚀 Installation
 
+### 1. Cloner le projet
 ```bash
-# 1. Clone le projet
 git clone https://github.com/7Bhil/bhil-cli.git
 cd bhil-cli
+```
 
-# 2. Installe les dépendances (au choix)
-npm install   # ou pnpm install, yarn install, bun install
+### 2. Lier la commande globalement (Local/Dev)
+Cette étape permet d'utiliser la commande `bhil` partout dans ton terminal pendant que tu développes.
 
-# 3. Installe bhil globalement sur ta machine
-npm install -g . # ou pnpm add -g ., yarn link
+**Sur Linux / macOS :**
+```bash
+sudo npm install -g bhil-cli
+```
+
+**Sur Windows :**
+1. Ouvre un terminal (PowerShell ou CMD) en **mode Administrateur** (clic droit -> Exécuter en tant qu'administrateur).
+2. Tape la commande :
+```bash
+npm install -g bhil-cli
 ```
 
 Maintenant tape `bhil` depuis n'importe où dans ton terminal !
@@ -92,6 +101,13 @@ Après chaque `bhil create` :
 | `astro`     | Astro                    | 4321     |
 | `node`      | Node.js + Express        | 3000     |
 | `electron`  | App bureau Electron      | —        |
+| `django`    | Django (Python)          | 8000     |
+| `laravel`   | Laravel (PHP)            | 8000     |
+| `nestjs`    | NestJS (Node Backend)    | 3000     |
+| `angular`   | Angular (Frontend)       | 4200     |
+| `fastapi`   | FastAPI (Python)         | 8000     |
+| `spring`    | Spring Boot (Java)       | 8080     |
+| `flutter`   | Flutter (Mobile/Web)     | —        |
 
 ## Librairies rapides
 

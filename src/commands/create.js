@@ -121,7 +121,7 @@ export async function createProject(name, options) {
   }
 
   // ── Install dépendances de base ──────────────────────────
-  if (options.install !== false) {
+  if (options.install !== false && fw.type === 'js') {
     const spinner = ora('Installation des dépendances...').start();
     try {
       if (pm === 'yarn') fs.writeFileSync(path.join(projectName, 'yarn.lock'), '');
@@ -135,29 +135,31 @@ export async function createProject(name, options) {
 
   // ── Librairies supplémentaires (prod/dev séparés) ────────
   // FIX: Prisma et autres libs marquées dev:true bien installées en -D
-  const extraKeys = extraLibs.filter(l => l !== 'tailwind');
-  const prodPkgs  = extraKeys
-    .filter(k => !POPULAR_LIBS[k]?.dev)
-    .flatMap(k => (POPULAR_LIBS[k]?.pkg || k).split(' '));
-  const devPkgs   = extraKeys
-    .filter(k => POPULAR_LIBS[k]?.dev)
-    .flatMap(k => POPULAR_LIBS[k].pkg.split(' '));
+  if (fw.type === 'js') {
+    const extraKeys = extraLibs.filter(l => l !== 'tailwind');
+    const prodPkgs  = extraKeys
+      .filter(k => !POPULAR_LIBS[k]?.dev)
+      .flatMap(k => (POPULAR_LIBS[k]?.pkg || k).split(' '));
+    const devPkgs   = extraKeys
+      .filter(k => POPULAR_LIBS[k]?.dev)
+      .flatMap(k => POPULAR_LIBS[k].pkg.split(' '));
 
-  if (prodPkgs.length > 0 || devPkgs.length > 0) {
-    const spinner = ora('Installation des librairies...').start();
-    try {
-      if (prodPkgs.length > 0) await execa(getInstallCmd(pm, prodPkgs),    { shell: true, cwd: projectName, stdio: 'pipe' });
-      if (devPkgs.length  > 0) await execa(getDevInstallCmd(pm, devPkgs),  { shell: true, cwd: projectName, stdio: 'pipe' });
-      spinner.succeed('Librairies installées !');
-    } catch (e) {
-      spinner.fail('Erreur installation librairies');
-      console.error(chalk.red(e.message));
+    if (prodPkgs.length > 0 || devPkgs.length > 0) {
+      const spinner = ora('Installation des librairies...').start();
+      try {
+        if (prodPkgs.length > 0) await execa(getInstallCmd(pm, prodPkgs),    { shell: true, cwd: projectName, stdio: 'pipe' });
+        if (devPkgs.length  > 0) await execa(getDevInstallCmd(pm, devPkgs),  { shell: true, cwd: projectName, stdio: 'pipe' });
+        spinner.succeed('Librairies installées !');
+      } catch (e) {
+        spinner.fail('Erreur installation librairies');
+        console.error(chalk.red(e.message));
+      }
     }
   }
 
   // ── Tailwind (toujours en devDependencies) ───────────────
   // FIX: utilisait getInstallCmd (prod) — maintenant getDevInstallCmd
-  if (addTailwind) {
+  if (addTailwind && fw.type === 'js') {
     const spinner = ora('Configuration de Tailwind CSS...').start();
     try {
       const twPkgs = POPULAR_LIBS['tailwind'].pkg.split(' ');
@@ -239,12 +241,13 @@ export async function createProject(name, options) {
   }
 
   // ── Instructions finales ─────────────────────────────────
-  const devPort = FRAMEWORKS[framework]?.port;
+  const devPort = fw?.port;
+  const startCmd = fw?.devCmd || getDevCmd(pm);
   console.log('');
   console.log(chalk.bold.green('  Tout est prêt !'));
   console.log('');
   console.log(`  ${chalk.gray('$')} ${chalk.white(`cd ${projectName}`)}`);
-  console.log(`  ${chalk.gray('$')} ${chalk.white(getDevCmd(pm))}`);
+  console.log(`  ${chalk.gray('$')} ${chalk.white(startCmd)}`);
   if (devPort) {
     console.log('');
     console.log(`  ${chalk.gray('Ouvre')} ${chalk.cyan(`http://localhost:${devPort}`)}`);

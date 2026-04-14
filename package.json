@@ -1,16 +1,21 @@
 {
-  "name": "bhil",
-  "version": "1.0.0",
+  "name": "bhil-cli",
+  "version": "1.1.0",
   "description": "Ton gestionnaire de projets personnel",
   "type": "module",
   "bin": {
-    "bhil": "./src/index.js"
+    "bhil": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",
     "dev": "node src/index.js"
   },
-  "keywords": ["cli", "react", "scaffold", "bhil"],
+  "keywords": [
+    "cli",
+    "react",
+    "scaffold",
+    "bhil"
+  ],
   "author": "Bhilal",
   "license": "MIT",
   "dependencies": {

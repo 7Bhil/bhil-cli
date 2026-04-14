@@ -2,6 +2,7 @@ import fs from 'fs';
 
 export const FRAMEWORKS = {
   react: {
+    type: 'js',
     label: 'React (Vite)',
     color: 'cyan',
     port: 5173,
@@ -11,6 +12,7 @@ export const FRAMEWORKS = {
     },
   },
   next: {
+    type: 'js',
     label: 'Next.js',
     color: 'white',
     port: 3000,
@@ -20,6 +22,7 @@ export const FRAMEWORKS = {
     },
   },
   vue: {
+    type: 'js',
     label: 'Vue 3 (Vite)',
     color: 'green',
     port: 5173,
@@ -29,6 +32,7 @@ export const FRAMEWORKS = {
     },
   },
   svelte: {
+    type: 'js',
     label: 'Svelte (Vite)',
     color: 'red',
     port: 5173,
@@ -38,6 +42,7 @@ export const FRAMEWORKS = {
     },
   },
   sveltekit: {
+    type: 'js',
     label: 'SvelteKit',
     color: 'red',
     port: 5173,
@@ -46,6 +51,7 @@ export const FRAMEWORKS = {
     },
   },
   nuxt: {
+    type: 'js',
     label: 'Nuxt 3',
     color: 'green',
     port: 3000,
@@ -54,6 +60,7 @@ export const FRAMEWORKS = {
     },
   },
   remix: {
+    type: 'js',
     label: 'Remix',
     color: 'blue',
     port: 3000,
@@ -62,6 +69,7 @@ export const FRAMEWORKS = {
     },
   },
   astro: {
+    type: 'js',
     label: 'Astro',
     color: 'magenta',
     port: 4321,
@@ -70,6 +78,7 @@ export const FRAMEWORKS = {
     },
   },
   node: {
+    type: 'js',
     label: 'Node.js + Express',
     color: 'yellow',
     port: 3000,
@@ -78,11 +87,79 @@ export const FRAMEWORKS = {
     },
   },
   electron: {
+    type: 'js',
     label: 'Electron (App bureau)',
     color: 'blue',
     port: null,
     variants: {
       default: { cmd: (pm, name) => pmCreate(pm, name, null, 'electron-vite') },
+    },
+  },
+  django: {
+    type: 'python',
+    label: 'Django (Python)',
+    color: 'green',
+    port: 8000,
+    variants: {
+      default: { cmd: (_, name) => `django-admin startproject ${name}` },
+    },
+  },
+  laravel: {
+    type: 'php',
+    label: 'Laravel (PHP)',
+    color: 'red',
+    port: 8000,
+    devCmd: 'php artisan serve',
+    variants: {
+      default: { cmd: (_, name) => `composer create-project laravel/laravel ${name}` },
+    },
+  },
+  nestjs: {
+    type: 'js',
+    label: 'NestJS (Node Backend)',
+    color: 'red',
+    port: 3000,
+    variants: {
+      default: { cmd: (pm, name) => `npx @nestjs/cli new ${name} --strict --package-manager ${pm}` },
+    },
+  },
+  angular: {
+    type: 'js',
+    label: 'Angular (Frontend)',
+    color: 'red',
+    port: 4200,
+    variants: {
+      default: { cmd: (_, name) => `npx @angular/cli new ${name} --routing --style css --skip-install` },
+    },
+  },
+  fastapi: {
+    type: 'python',
+    label: 'FastAPI (Python)',
+    color: 'cyan',
+    port: 8000,
+    devCmd: 'uvicorn main:app --reload',
+    variants: {
+      default: { cmd: (_, name) => `mkdir ${name} && echo "from fastapi import FastAPI\napp = FastAPI()\n@app.get('/')\ndef root(): return {'message': 'Hello FastAPI'}" > ${name}/main.py` },
+    },
+  },
+  spring: {
+    type: 'java',
+    label: 'Spring Boot (Java)',
+    color: 'green',
+    port: 8080,
+    devCmd: './mvnw spring-boot:run',
+    variants: {
+      default: { cmd: (_, name) => `mkdir ${name} && curl https://start.spring.io/starter.tgz -d type=maven-project -d name=${name} | tar -xzvf - -C ${name}` },
+    },
+  },
+  flutter: {
+    type: 'dart',
+    label: 'Flutter (Mobile/Web)',
+    color: 'blue',
+    port: null,
+    devCmd: 'flutter run',
+    variants: {
+      default: { cmd: (_, name) => `flutter create ${name}` },
     },
   },
 };

@@ -1,0 +1,10 @@
+node_modules/
+essaie/
+ess/
+bhil-fixed/
+bhil-fixed.tar.gz
+.git/
+.vscode/
+.npmrc
+*.log
+.DS_Store
