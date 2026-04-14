@@ -71,7 +71,9 @@ export async function createProject(name, options) {
     answers = await inquirer.prompt(questions);
   }
 
-  projectName = projectName || answers.projectName;
+  projectName = (projectName || answers.projectName).trim();
+  // Sanitize: remove chars that could break shell or paths
+  projectName = projectName.replace(/[^a-zA-Z0-9-_]/g, '-');
 
   if (fs.existsSync(projectName)) {
     console.error(chalk.red(`\n  Erreur : Le dossier "${projectName}" existe déjà.\n`));
@@ -106,6 +108,19 @@ export async function createProject(name, options) {
   const variant = useTs && fw?.variants?.ts ? 'ts' : 'default';
   const createCmd = fw?.variants?.[variant]?.cmd(pm, projectName);
 
+  // Vérif outils pour frameworks non-JS
+  if (fw.type !== 'js') {
+    const bin = fw.type === 'python' ? 'python' : (fw.type === 'php' ? 'composer' : (fw.type === 'dart' ? 'flutter' : null));
+    if (bin) {
+      try { await execa(`which ${bin}`, { shell: true }); }
+      catch (_) {
+        console.error(chalk.red(`\n  Erreur : L'outil "${bin}" est requis pour ce framework mais n'a pas été trouvé.`));
+        console.log(chalk.gray(`  Installe ${bin} et réessaye.\n`));
+        return;
+      }
+    }
+  }
+
   if (!createCmd || fw?.variants?.[variant]?.custom) {
     await createCustomProject(projectName, pm);
   } else {
@@ -120,16 +135,20 @@ export async function createProject(name, options) {
     }
   }
 
-  // ── Install dépendances de base ──────────────────────────
+  // ── Install dépendances de base (skip si déjà fait par le framework) ──
   if (options.install !== false && fw.type === 'js') {
-    const spinner = ora('Installation des dépendances...').start();
-    try {
-      if (pm === 'yarn') fs.writeFileSync(path.join(projectName, 'yarn.lock'), '');
-      await execa(getBaseInstallCmd(pm), { shell: true, cwd: projectName, stdio: 'pipe' });
-      spinner.succeed('Dépendances installées !');
-    } catch (e) {
-      spinner.fail(`Erreur installation dépendances`);
-      console.error(chalk.gray(`  ${e.message.split('\n')[0]}`));
+    if (fs.existsSync(path.join(projectName, 'node_modules'))) {
+      console.log(chalk.gray('  Dépendances déjà installées.'));
+    } else {
+      const spinner = ora('Installation des dépendances...').start();
+      try {
+        if (pm === 'yarn') fs.writeFileSync(path.join(projectName, 'yarn.lock'), '');
+        await execa(getBaseInstallCmd(pm), { shell: true, cwd: projectName, stdio: 'pipe' });
+        spinner.succeed('Dépendances installées !');
+      } catch (e) {
+        spinner.fail(`Erreur installation dépendances`);
+        console.error(chalk.gray(`  ${e.message.split('\n')[0]}`));
+      }
     }
   }
 

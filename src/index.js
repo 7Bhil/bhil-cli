@@ -36,7 +36,7 @@ function showSplash() {
   ];
   console.log('');
   logo.forEach(line => console.log(colorLine(line)));
-  console.log(chalk.gray(`  ───────────────────────────── bhil-cli v1.1.0 ─────────────────────────────`));
+  console.log(chalk.gray(`  ───────────────────────────── bhil-cli v1.1.1 ─────────────────────────────`));
   console.log('');
 }
 
