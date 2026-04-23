@@ -6,6 +6,14 @@ import { createProject } from './commands/create.js';
 import { addPackage } from './commands/add.js';
 import { listTemplates } from './commands/list.js';
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+const CLI_VERSION = pkg.version;
 
 function colorLine(text) {
   const colors = [
@@ -36,7 +44,7 @@ function showSplash() {
   ];
   console.log('');
   logo.forEach(line => console.log(colorLine(line)));
-  console.log(chalk.gray(`  ───────────────────────────── bhil-cli v1.1.1 ─────────────────────────────`));
+  console.log(chalk.gray(`  ───────────────────────────── bhil-cli v${CLI_VERSION} ─────────────────────────────`));
   console.log('');
 }
 
@@ -74,7 +82,7 @@ async function showDashboard() {
 program
   .name('bhil')
   .description('Crée et gère tes projets en quelques secondes')
-  .version('1.0.0');
+  .version(CLI_VERSION);
 
 program
   .command('create [name]')
