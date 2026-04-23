@@ -100,9 +100,9 @@ export const FRAMEWORKS = {
     label: 'Django (Python)',
     color: 'green',
     port: 8000,
-    reqBin: 'django-admin',
+    reqBin: 'python3', // On demande juste python3, on gère le reste !
     variants: {
-      default: { cmd: (_, name) => `django-admin startproject ${name}` },
+      default: { cmd: (_, name) => `python3 -m venv ${name} && ${name}/bin/pip install django && ${name}/bin/django-admin startproject ${name} ${name}` },
     },
   },
   laravel: {
