@@ -100,6 +100,7 @@ export const FRAMEWORKS = {
     label: 'Django (Python)',
     color: 'green',
     port: 8000,
+    reqBin: 'django-admin',
     variants: {
       default: { cmd: (_, name) => `django-admin startproject ${name}` },
     },
@@ -110,6 +111,7 @@ export const FRAMEWORKS = {
     color: 'red',
     port: 8000,
     devCmd: 'php artisan serve',
+    reqBin: 'composer',
     variants: {
       default: { cmd: (_, name) => `composer create-project laravel/laravel ${name}` },
     },
@@ -138,8 +140,9 @@ export const FRAMEWORKS = {
     color: 'cyan',
     port: 8000,
     devCmd: 'uvicorn main:app --reload',
+    reqBin: 'python',
     variants: {
-      default: { cmd: (_, name) => `mkdir ${name} && echo "from fastapi import FastAPI\napp = FastAPI()\n@app.get('/')\ndef root(): return {'message': 'Hello FastAPI'}" > ${name}/main.py` },
+      default: { cmd: (_, name) => `mkdir ${name} && printf "from fastapi import FastAPI\\napp = FastAPI()\\n@app.get('/')\\ndef root(): return {'message': 'Hello FastAPI'}\\n" > ${name}/main.py` },
     },
   },
   spring: {
@@ -148,6 +151,7 @@ export const FRAMEWORKS = {
     color: 'green',
     port: 8080,
     devCmd: './mvnw spring-boot:run',
+    reqBin: 'curl',
     variants: {
       default: { cmd: (_, name) => `mkdir ${name} && curl https://start.spring.io/starter.tgz -d type=maven-project -d name=${name} | tar -xzvf - -C ${name}` },
     },
@@ -158,6 +162,7 @@ export const FRAMEWORKS = {
     color: 'blue',
     port: null,
     devCmd: 'flutter run',
+    reqBin: 'flutter',
     variants: {
       default: { cmd: (_, name) => `flutter create ${name}` },
     },
@@ -165,7 +170,7 @@ export const FRAMEWORKS = {
 };
 
 export const POPULAR_LIBS = {
-  'tailwind': { pkg: 'tailwindcss postcss autoprefixer', label: 'Tailwind CSS v3', dev: true },
+  'tailwind': { pkg: 'tailwindcss@^3 postcss autoprefixer', label: 'Tailwind CSS v3', dev: true },
   'router':   { pkg: 'react-router-dom',                 label: 'React Router' },
   'axios':    { pkg: 'axios',                            label: 'Axios' },
   'query':    { pkg: '@tanstack/react-query',            label: 'TanStack Query' },

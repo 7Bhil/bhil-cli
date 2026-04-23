@@ -110,7 +110,7 @@ export async function createProject(name, options) {
 
   // Vérif outils pour frameworks non-JS
   if (fw.type !== 'js') {
-    const bin = fw.type === 'python' ? 'python' : (fw.type === 'php' ? 'composer' : (fw.type === 'dart' ? 'flutter' : null));
+    const bin = fw.reqBin || (fw.type === 'python' ? 'python' : (fw.type === 'php' ? 'composer' : (fw.type === 'dart' ? 'flutter' : (fw.type === 'java' ? 'java' : null))));
     if (bin) {
       try { await execa(`which ${bin}`, { shell: true }); }
       catch (_) {
