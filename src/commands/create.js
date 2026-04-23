@@ -48,7 +48,7 @@ export async function createProject(name, options) {
     message: 'Gestionnaire de paquets :',
     choices: ['npm', 'yarn', 'pnpm', 'bun'],
     default: pm,
-    when: !options.pm,
+    when: (answers) => !options.pm && FRAMEWORKS[answers.framework || framework]?.type === 'js',
   });
 
   questions.push({
@@ -56,7 +56,7 @@ export async function createProject(name, options) {
     name: 'useTs',
     message: 'TypeScript ?',
     default: false,
-    when: !useTs,
+    when: (answers) => !useTs && FRAMEWORKS[answers.framework || framework]?.type === 'js',
   });
 
   questions.push({
@@ -64,6 +64,7 @@ export async function createProject(name, options) {
     name: 'libs',
     message: 'Librairies à ajouter :',
     choices: Object.entries(POPULAR_LIBS).map(([key, val]) => ({ name: val.label, value: key })),
+    when: (answers) => FRAMEWORKS[answers.framework || framework]?.type === 'js',
   });
 
   let answers = {};
@@ -91,10 +92,12 @@ export async function createProject(name, options) {
   console.log(chalk.bold('  Ton projet :'));
   console.log(`  ${chalk.gray('Nom')}         ${chalk.cyan(projectName)}`);
   console.log(`  ${chalk.gray('Framework')}   ${chalk.cyan(FRAMEWORKS[framework]?.label || framework)}`);
-  console.log(`  ${chalk.gray('Paquets')}     ${chalk.cyan(pm)}`);
-  console.log(`  ${chalk.gray('TypeScript')}  ${useTs ? chalk.green('oui') : chalk.gray('non')}`);
-  if (extraLibs.length) {
-    console.log(`  ${chalk.gray('Librairies')}  ${chalk.cyan(extraLibs.map(k => POPULAR_LIBS[k]?.label || k).join(', '))}`);
+  if (FRAMEWORKS[framework]?.type === 'js') {
+    console.log(`  ${chalk.gray('Paquets')}     ${chalk.cyan(pm)}`);
+    console.log(`  ${chalk.gray('TypeScript')}  ${useTs ? chalk.green('oui') : chalk.gray('non')}`);
+    if (extraLibs.length) {
+      console.log(`  ${chalk.gray('Librairies')}  ${chalk.cyan(extraLibs.map(k => POPULAR_LIBS[k]?.label || k).join(', '))}`);
+    }
   }
   console.log('');
 
