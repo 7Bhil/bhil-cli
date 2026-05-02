@@ -170,7 +170,7 @@ export const FRAMEWORKS = {
 };
 
 export const POPULAR_LIBS = {
-  'tailwind': { pkg: 'tailwindcss@^3 postcss autoprefixer', label: 'Tailwind CSS v3', dev: true },
+  'tailwind': { pkg: 'tailwindcss @tailwindcss/postcss postcss', label: 'Tailwind CSS v4', dev: true },
   'router':   { pkg: 'react-router-dom',                 label: 'React Router' },
   'axios':    { pkg: 'axios',                            label: 'Axios' },
   'query':    { pkg: '@tanstack/react-query',            label: 'TanStack Query' },

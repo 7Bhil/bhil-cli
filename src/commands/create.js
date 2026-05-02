@@ -179,15 +179,34 @@ export async function createProject(name, options) {
     }
   }
 
-  // ── Tailwind (toujours en devDependencies) ───────────────
-  // FIX: utilisait getInstallCmd (prod) — maintenant getDevInstallCmd
+  // ── Tailwind (v4) ────────────────────────────────────────
   if (addTailwind && fw.type === 'js') {
-    const spinner = ora('Configuration de Tailwind CSS...').start();
+    const spinner = ora('Configuration de Tailwind CSS v4...').start();
     try {
       const twPkgs = POPULAR_LIBS['tailwind'].pkg.split(' ');
       await execa(getDevInstallCmd(pm, twPkgs), { shell: true, cwd: projectName, stdio: 'pipe' });
-      await execa('npx tailwindcss@3 init -p',  { shell: true, cwd: projectName, stdio: 'ignore' });
-      spinner.succeed('Tailwind CSS configuré !');
+
+      // Création de postcss.config.mjs (syntaxe v4)
+      const postcssConfig = "export default {\n  plugins: {\n    '@tailwindcss/postcss': {},\n  },\n};\n";
+      fs.writeFileSync(path.join(projectName, 'postcss.config.mjs'), postcssConfig);
+
+      // Ajout de l'import Tailwind dans le CSS principal
+      const cssPath = framework === 'next' 
+        ? path.join(projectName, 'app', 'globals.css') 
+        : path.join(projectName, 'src', 'index.css');
+      
+      let cssContent = '@import "tailwindcss";\n';
+      if (fs.existsSync(cssPath)) {
+        cssContent += '\n' + fs.readFileSync(cssPath, 'utf8');
+      }
+      
+      // S'assurer que le dossier parent existe (cas de Next.js app dir)
+      const cssDir = path.dirname(cssPath);
+      if (!fs.existsSync(cssDir)) fs.mkdirSync(cssDir, { recursive: true });
+      
+      fs.writeFileSync(cssPath, cssContent);
+
+      spinner.succeed('Tailwind CSS v4 configuré !');
     } catch (e) {
       spinner.fail('Erreur configuration Tailwind');
       console.error(chalk.gray(`  ${e.message.split('\n')[0]}`));
@@ -215,7 +234,12 @@ export async function createProject(name, options) {
     try {
       fs.writeFileSync(appPath, REACT_PREMIUM_APP(projectName));
       fs.writeFileSync(cssPath, REACT_PREMIUM_CSS);
-      fs.writeFileSync(idxCss, '/* reset by bhil */\n');
+      if (!addTailwind) {
+        fs.writeFileSync(idxCss, '/* reset by bhil */\n');
+      } else {
+        // Si tailwind est là, on ne vide pas le fichier car il contient @import "tailwindcss"
+        fs.appendFileSync(idxCss, '\n/* theme reset */\n');
+      }
 
       // main.jsx / main.tsx
       // FIX: import React supprimé (inutile avec Vite JSX transform automatique)
